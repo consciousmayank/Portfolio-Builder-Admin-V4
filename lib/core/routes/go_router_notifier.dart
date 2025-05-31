@@ -18,29 +18,28 @@ GoRouter goRouter(Ref ref) {
   final isLoggedIn = ref.watch(authNotifierProvider);
   
   return GoRouter(
-    initialLocation: '/login',
+    initialLocation: isLoggedIn ? '/home' : '/login',
     redirect: (context, state) {
       log('GoRouter: Redirect called - isLoggedIn: $isLoggedIn, location: ${state.matchedLocation}');
       
       final isGoingToLogin = state.matchedLocation == '/login';
       final isGoingToSignUp = state.matchedLocation == '/signup';
       final isGoingToForgotPassword = state.matchedLocation == '/login/forgotPassword';
+      final isOnAuthPages = isGoingToLogin || isGoingToSignUp || isGoingToForgotPassword;
 
       // If user is logged in and trying to access auth pages, redirect to home
-      if (isLoggedIn) {
-        if (isGoingToLogin || isGoingToSignUp || isGoingToForgotPassword) {
-          log('GoRouter: Redirecting logged in user to /home');
-          return '/home';
-        }
-      } else {
-        // If user is not logged in and trying to access protected pages, redirect to login
-        if (!isGoingToLogin && !isGoingToSignUp && !isGoingToForgotPassword) {
-          log('GoRouter: Redirecting non-logged in user to /login');
-          return '/login';
-        }
+      if (isLoggedIn && isOnAuthPages) {
+        log('GoRouter: Redirecting logged in user from auth pages to /home');
+        return '/home';
       }
       
-      log('GoRouter: No redirect needed');
+      // If user is not logged in and trying to access protected pages, redirect to login
+      if (!isLoggedIn && !isOnAuthPages) {
+        log('GoRouter: Redirecting non-logged in user to /login');
+        return '/login';
+      }
+      
+      log('GoRouter: No redirect needed - user on appropriate page');
       return null;
     },
     routes: [

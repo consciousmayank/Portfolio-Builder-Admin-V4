@@ -7,7 +7,7 @@ part of 'app_startup_notifier.dart';
 // **************************************************************************
 
 String _$appStartupNotifierHash() =>
-    r'999720fd46d353a283d07f049da6449dee17caae';
+    r'e0d0277b23d1b640f71fba7cd396e357099ec3ad';
 
 /// Advanced app startup notifier with retry capability
 ///

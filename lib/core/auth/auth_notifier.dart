@@ -13,7 +13,7 @@ class AuthNotifier extends _$AuthNotifier {
   @override
   bool build() {
     log('AuthNotifier: build() called');
-    _loadAuthState();
+    // Don't automatically load auth state here to avoid async issues
     return false;
   }
 
@@ -42,7 +42,9 @@ class AuthNotifier extends _$AuthNotifier {
           ?.data['avatar'] ??
       '';
 
-  Future<void> _loadAuthState() async {
+  /// Public method to explicitly load authentication state
+  /// This should be called during app startup to ensure proper auth state
+  Future<bool> loadAuthState() async {
     try {
       log('AuthNotifier: Loading auth state...');
 
@@ -51,17 +53,25 @@ class AuthNotifier extends _$AuthNotifier {
           .get<bool>(_isLoggedInKey, defaultValue: false);
 
       if (isLoggedIn != null && isLoggedIn == true) {
-        state = await _verifyAuthToken();
-        return;
+        final authResult = await _verifyAuthToken();
+        state = authResult;
+        log('AuthNotifier: Auth state loaded - isAuthenticated: $authResult');
+        return authResult;
       } else {
         state = false;
-        return;
+        log('AuthNotifier: No saved login state found');
+        return false;
       }
     } catch (e) {
       log('AuthNotifier: Error loading auth state: $e');
       // Handle error - default to not logged in
       state = false;
+      return false;
     }
+  }
+
+  Future<void> _loadAuthState() async {
+    await loadAuthState();
   }
 
   Future<void> login(String token) async {
