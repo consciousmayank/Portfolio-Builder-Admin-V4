@@ -1,0 +1,5 @@
+{
+    "BASE_URL": "https://awspb.mayankjoshi.in",
+    "ENVIRONMENT": "development",
+    "APP_PREFERENCE_KEY": "admin_v4"
+}
